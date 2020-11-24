@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const app = express()
 require('dotenv').config()
+const userController = require('./controllers/userscontroller')
 
 
 const PORT = process.env.port || 5000;
@@ -9,6 +10,10 @@ const mongoURI = process.env.MONGODB_URI || `mongodb+srv://${process.env.DB_USER
 mongoose.set('useFindAndModify', false)
 
 app.use(express.urlencoded({extended:true}))
+
+
+//post a new user
+app.get('/api/v1/users/new', userController.new) 
 
 mongoose.connect( mongoURI, { useNewUrlParser: true, useUnifiedTopology: true } )
 .then(result=>{console.log('successfully connected')
