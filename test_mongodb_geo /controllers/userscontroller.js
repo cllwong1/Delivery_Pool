@@ -10,9 +10,9 @@ const userController = {
     //using geocoding api
     //using mmongodb geolocation search functionality
     new: (req, res)=> {
-        axios.get('https://maps.googleapis.com/maps/api/geocode/json?address=79+Anson+Road&key=AIzaSyDB07W_9m5_zfAes67wlZehgX8XYS-2AV4')
+        axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=79+Anson+Road&key=${process.env.GEOCODEAPI}`)
         .then(response=>{
-            console.log(response.data.results[0].geometry.location.lat)
+            console.log(response.data.results[0])
         })
         .catch(err=> console.log(err))
     }
