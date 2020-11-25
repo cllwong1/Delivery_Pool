@@ -1,8 +1,13 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const cors = require('cors')
 const app = express()
 require('dotenv').config()
 const userController = require('./controllers/userscontroller')
+
+app.use(cors())
+
+app.options('*', cors()) 
 
 
 const PORT = process.env.port || 5000;
@@ -13,7 +18,7 @@ app.use(express.urlencoded({extended:true}))
 
 
 //post a new user
-app.get('/api/v1/users/new', userController.new) 
+app.post('/api/v1/users/new', userController.new) 
 
 mongoose.connect( mongoURI, { useNewUrlParser: true, useUnifiedTopology: true } )
 .then(result=>{console.log('successfully connected')
