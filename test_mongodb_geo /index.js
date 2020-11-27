@@ -4,6 +4,7 @@ const cors = require('cors')
 const app = express()
 require('dotenv').config()
 const userController = require('./controllers/userscontroller')
+const orderController = require('./controllers/orderscontroller')
 
 app.use(cors())
 
@@ -16,9 +17,16 @@ mongoose.set('useFindAndModify', false)
 
 app.use(express.urlencoded({extended:true}))
 
+//index page of orders
+app.get('/api/v1/orders', orderController.showAllOrders)
 
-//post a new user
+//post a new user (registration)
 app.post('/api/v1/users/new', userController.new) 
+
+//create a new order
+app.get('/api/v1/users/neworder', orderController.newOrder)
+
+
 
 mongoose.connect( mongoURI, { useNewUrlParser: true, useUnifiedTopology: true } )
 .then(result=>{console.log('successfully connected')
