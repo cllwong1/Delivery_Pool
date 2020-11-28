@@ -37,6 +37,7 @@ const ordersController = {
 
     },
 
+
     newOrder(req, res){
       usersModel.findOne({
         first_name: "Adeline"
@@ -48,7 +49,24 @@ const ordersController = {
         
       )
       .catch(err=>{console.log(err)})
+    },
+
+    createOrder(req, res){
+        const orderbody = req.body
+        //ensure jwt is correct for each user
+        //check the user for each order, get the user id 
+        //check that the user is 
+        if (!orderbody.restaurant || !orderbody.estDeliveryTime || !orderbody.estDeliveryFee || !orderbody.meetupPoint|| !orderbody.order){
+          res.json({error: "field must not be empty"})
+        }
+        if (!Number.isInteger(parseInt(req.body.estDeliveryTime))){
+          res.json({error: "numeric field should be numeric"})
+          return
+        }
+
+
     }
+
 }
     
 

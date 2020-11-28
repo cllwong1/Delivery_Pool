@@ -16,6 +16,7 @@ const mongoURI = process.env.MONGODB_URI || `mongodb+srv://${process.env.DB_USER
 mongoose.set('useFindAndModify', false)
 
 app.use(express.urlencoded({extended:true}))
+app.use(express.json())
 
 //index page of orders
 app.get('/api/v1/orders', orderController.showAllOrders)
@@ -25,6 +26,9 @@ app.post('/api/v1/users/new', userController.new)
 
 //create a new order
 app.get('/api/v1/users/neworder', orderController.newOrder)
+
+//post a new order
+app.post('/api/v1/users/neworder/create', orderController.createOrder)
 
 
 
