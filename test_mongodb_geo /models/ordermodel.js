@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 const orderSchema = new mongoose.Schema( {
-  userid: {type: String, unique: true},
-  slug: {type: String, unique:true},
+  userid: {type: String},
+  slug: {type: String},
   contact: {type: Number},
   restaurant: {type: String, required: true},
   deliveryTimeEst: {type: String, required: true},
@@ -22,7 +22,7 @@ const orderSchema = new mongoose.Schema( {
 
 orderSchema.index({ "location": "2dsphere" });
 
-const orderModel = mongoose.model('Order', orderSchema )
+const orderModel = mongoose.model('Neworder', orderSchema )
 
 module.exports= orderModel
 //     {first_name: {type: String, required: true },

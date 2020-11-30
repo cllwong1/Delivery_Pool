@@ -3,8 +3,9 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const app = express()
 require('dotenv').config()
-const userController = require('./controllers/userscontroller')
+const usersController = require('./controllers/userscontroller')
 const orderController = require('./controllers/orderscontroller')
+const jwt = require('jsonwebtoken')
 
 app.use(cors())
 
@@ -21,14 +22,18 @@ app.use(express.json())
 //index page of orders
 app.get('/api/v1/orders', orderController.showAllOrders)
 
-//post a new user (registration)
-app.post('/api/v1/users/new', userController.new) 
+
+//user registration
+app.post('/api/v1/users/register', usersController.register)
+
+// user login route
+app.post('/api/v1/users/login', usersController.login)
 
 //create a new order
 app.get('/api/v1/users/neworder', orderController.newOrder)
 
 //post a new order
-app.post('/api/v1/users/neworder/create', orderController.createOrder)
+app.post('/api/v1/users/neworder/create', verifyJWT, orderController.createOrder)
 
 
 
@@ -39,3 +44,33 @@ app.listen(PORT)
 
     
 .catch(err=> console.log(err))
+
+function verifyJWT(req, res, next) {
+    // get the jwt token from the request header
+    const authToken = req.headers.auth_token
+    
+    // check if authToken header value is empty, return err if empty
+    if (!authToken) {
+      res.json({
+        success: false,
+        message: "Auth header value is missing"
+      })
+      return
+    }
+  
+    // verify that JWT is valid and not expired
+    try {
+      // if verify success, proceed
+      const userData = jwt.verify(authToken, process.env.JWT_SECRET, {
+        algorithms: ['HS384']
+      })
+      next()
+    } catch(err) {
+      // if fail, return error msg
+      res.json({
+        success: false,
+        message: "Auth token is invalid"
+      })
+      return
+    }
+  }
