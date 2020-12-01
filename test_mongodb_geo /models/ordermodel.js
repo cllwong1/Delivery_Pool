@@ -13,16 +13,18 @@ const orderSchema = new mongoose.Schema( {
     coordinates: [Number],
   },
   distance: {type: Number},
+  usersjoined: [String],
   orderDetails: [{
     orderUserId: String,
     food: [String]
-  }]
+  }],
+  isFfulfilled: {type: Boolean, default: false}
 
 } )
 
 orderSchema.index({ "location": "2dsphere" });
 
-const orderModel = mongoose.model('Neworder', orderSchema )
+const orderModel = mongoose.model('New1order', orderSchema )
 
 module.exports= orderModel
 //     {first_name: {type: String, required: true },

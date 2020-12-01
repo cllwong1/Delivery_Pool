@@ -67,15 +67,14 @@ const ordersController = {
         }
 
         //decode the jwt to retrieve the user iinfo
-        const authToken = req.headers.auth_token
-        const rawJWT = jwt.decode(authToken)
-        const email = rawJWT.email
+        // const authToken = req.headers.auth_token
+        // const rawJWT = jwt.decode(authToken)
+        // const email = rawJWT.email
 
         //check the user databsase to see if the user exists using the above user info
 
-        usersModel.findOne({
-          email: email
-        })
+        // 
+        obtainUserInfo(req, res)
         .then(response=>{
           if (!response){
             res.json({message: "no such user in database"})
@@ -94,10 +93,12 @@ const ordersController = {
                    deliveryFee: req.body.estDeliveryFee,
                    meetupPoint: meetupPoint,
                    location: {type: "Point", coordinates: [georesponse.data.results[0].geometry.location.lng, georesponse.data.results[0].geometry.location.lat]},
+                   usersjoined: [response.user_id],
                    orderDetails: [{
                      orderUserId: response.user_id,
                      food: [req.body.order]
-                   }]
+                   }],
+                   isFulfilled: false
                   })
                   .then(orderresponse=>{
                     res.json({message: "successfully capture order"})
@@ -119,10 +120,87 @@ const ordersController = {
         )
         .catch(err=> console.log(err))
 
+},
+
+joinedOrdersPending(req, res) {
+  //obtain the log in user detail fromm the  cookies auth token
+  obtainUserInfo(req, res)
+  .then(response=>{
+    if(!response){
+      res.json({message: "user error"})
+      return
+    }
+    ordersModel.find({
+      $and: [
+        {usersjoined: response.user_id},
+        {isFulfilled: false}
+      ]
+    })
+    .then(pendingOrders=>{
+      res.json(pendingOrders)
+    })
+    .catch(err=>{
+      console.log(err)
+      res.json({message: "orders error"})
+    })
+
+    })
+
+  .catch(err=>{
+    console.log(err)
+    res.json({message:"database error"})
+  })
+  //array of user id of peopls who joined the orders - if in the array, then return
+  //from orders model, if the orders array contain the login udser
+},
+
+createdOrdersPending(req, res) {
+  //obtain the log in user detail from the cookies auth token
+  //return all orders where user id matches the loggin user
+  obtainUserInfo(req, res)
+  .then(response=>{
+    if(!response){
+      res.json({message: "user error"})
+      return
+    }
+    ordersModel.find({
+      $and: [
+        {userid: {$eq: response.user_id}},
+        {isFfulfilled: {$eq: false}}
+      ]
+      // userid: response.user_id
+    })
+    .then(pendingOrders=>{
+    // console.log(pendingOrders)
+    res.json(pendingOrders)
+    })
+    .catch(err=>{
+      console.log(err)
+      res.json({message: "orders error"})
+    })
+
+    })
+
+  .catch(err=>{
+    console.log(err)
+    res.json({message:"database error"})
+  })
 }
+
 }
     
 
+function obtainUserInfo(req, res){
+  //decode the jwt to retrieve the user iinfo
+  const authToken = req.headers.auth_token
+  const rawJWT = jwt.decode(authToken)
+  const email = rawJWT.email
 
+  //check the user databsase to see if the user exists using the above user info
+
+  return usersModel.findOne({
+    email: email
+  })
+}
 
 module.exports = ordersController

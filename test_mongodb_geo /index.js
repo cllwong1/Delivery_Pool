@@ -35,6 +35,12 @@ app.get('/api/v1/users/neworder', orderController.newOrder)
 //post a new order
 app.post('/api/v1/users/neworder/create', verifyJWT, orderController.createOrder)
 
+//index page show all orders that are pending (joined)
+app.get('/api/v1/users/ordersjoined', orderController.joinedOrdersPending)
+
+//index page show all orders that are pending (created by users)
+app.get('/api/v1/users/orderscreated', orderController.createdOrdersPending)
+
 
 
 mongoose.connect( mongoURI, { useNewUrlParser: true, useUnifiedTopology: true } )
