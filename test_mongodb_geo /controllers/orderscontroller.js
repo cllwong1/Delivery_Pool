@@ -185,6 +185,24 @@ createdOrdersPending(req, res) {
     console.log(err)
     res.json({message:"database error"})
   })
+},
+
+amendCreatedOrder(req, res) {     
+  obtainUserInfo(req, res)
+  .then(response=>{
+    if(!response){
+      res.json({message: "user error"})
+      return
+}
+    const orderid = req.params.user_id
+    ordersModel.find({_id: orderid})
+    .then(result=>{
+      console.log(result)
+    })
+    .catch(err=>{ console.log(err)})
+
+})
+
 }
 
 }

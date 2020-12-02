@@ -36,10 +36,13 @@ app.get('/api/v1/users/neworder', orderController.newOrder)
 app.post('/api/v1/users/neworder/create', verifyJWT, orderController.createOrder)
 
 //index page show all orders that are pending (joined)
-app.get('/api/v1/users/ordersjoined', orderController.joinedOrdersPending)
+app.get('/api/v1/users/ordersjoined', verifyJWT, orderController.joinedOrdersPending)
 
 //index page show all orders that are pending (created by users)
-app.get('/api/v1/users/orderscreated', orderController.createdOrdersPending)
+app.get('/api/v1/users/orderscreated',verifyJWT, orderController.createdOrdersPending)
+
+//amend a particular order
+app.post('/api/v1/users/orderscreated/:_id', verifyJWT, orderController.amendCreatedOrder)
 
 
 
