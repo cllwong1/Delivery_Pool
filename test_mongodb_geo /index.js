@@ -20,8 +20,8 @@ app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 
 //index page of orders
-app.get('/api/v1/orders', orderController.showAllOrders)
-
+// app.get('/api/v1/orders', orderController.showAllOrders)
+app.post('/api/v1/location', verifyJWT, orderController.locate)  
 
 //user registration
 app.post('/api/v1/users/register', usersController.register)
@@ -29,8 +29,11 @@ app.post('/api/v1/users/register', usersController.register)
 // user login route
 app.post('/api/v1/users/login', usersController.login)
 
+// join an order
+app.post('/api/v1/users/joinorder/:id', verifyJWT, orderController.joinOrder)
+
 //create a new order
-app.get('/api/v1/users/neworder', orderController.newOrder)
+//app.get('/api/v1/users/neworder', orderController.newOrder)
 
 //post a new order
 app.post('/api/v1/users/neworder/create', verifyJWT, orderController.createOrder)

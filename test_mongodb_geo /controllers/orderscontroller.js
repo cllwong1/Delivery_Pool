@@ -40,6 +40,7 @@ const ordersController = {
 
   locate: (req, res) => {
     const address = req.body.address
+    // console.log(req.body)
     const encodedAddress = encodeURIComponent(address);
     obtainUserInfo(req, res)
     .then(result=> {
@@ -82,19 +83,41 @@ const ordersController = {
     
   },
 
-
-    newOrder(req, res){
-      usersModel.findOne({
-        first_name: "Adeline"
+  joinOrder(req, res){
+    //retrieve the order id from the params
+    // retrive the order item 
+    const orderid = req.params.id
+    const orderitem = req.body.orderitem
+    //push the user into the userjoined array
+    //push the userid and order item into the orderdetails array
+    obtainUserInfo(req, res)
+    .then( response=>{
+      ordersModel.findOneAndUpdate({_id: orderid},
+        {$push:{usersjoined: response.user_id, orderDetails: {orderUserId: response.user_id  , food: orderitem}}})
+      .then(result=>{
+        res.json({message: "successfully join order"})
+        console.log('working')
       })
-      .then(response=>{
-        //console.log(response)
-        res.json(response)
-      }
+      .catch(err=> console.log(err))
+      
+    }
+    )
+    .catch(err=> console.log(err))
+  },
+
+
+    // newOrder(req, res){
+    //   usersModel.findOne({
+    //     first_name: "Adeline"
+    //   })
+    //   .then(response=>{
+    //     //console.log(response)
+    //     res.json(response)
+    //   }
         
-      )
-      .catch(err=>{console.log(err)})
-    },
+    //   )
+    //   .catch(err=>{console.log(err)})
+    // },
 
     createOrder(req, res){
         const orderbody = req.body
