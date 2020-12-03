@@ -6,37 +6,81 @@ const axios = require('axios')
 
 const ordersController = {
 
-    showAllOrders(req,res) {
-        const long= 103.8457
-        const lat = 1.2743
-        usersModel.createIndexes( { "location" : "2dsphere" } )
-        .then(result=> {
-            usersModel.aggregate([
-                {
-                  $geoNear: {
-                     near: { 
-                       type: "Point",
-                       coordinates: [ long , lat]
-                     },
-                     distanceField: "dist.calculated",
+    // showAllOrders(req,res) {
+    //     const long= 103.8457
+    //     const lat = 1.2743
+    //     usersModel.createIndexes( { "location" : "2dsphere" } )
+    //     .then(result=> {
+    //         usersModel.aggregate([
+    //             {
+    //               $geoNear: {
+    //                  near: { 
+    //                    type: "Point",
+    //                    coordinates: [ long , lat]
+    //                  },
+    //                  distanceField: "dist.calculated",
         
-                     spherical: true
-                  }
-                }
-               ],(err,data)=>{
-                if(err) {
-                  console.log(err);
-                  return;
-                }
-                response.json(data);
-              })
+    //                  spherical: true
+    //               }
+    //             }
+    //            ],(err,data)=>{
+    //             if(err) {
+    //               console.log(err);
+    //               return;
+    //             }
+    //             response.json(data);
+    //           })
 
-        })
-        .catch(err=>{
-            console.log(err)
-        })
+    //     })
+    //     .catch(err=>{
+    //         console.log(err)
+    //     })
 
-    },
+    // },
+
+  locate: (req, res) => {
+    const address = req.body.address
+    const encodedAddress = encodeURIComponent(address);
+    obtainUserInfo(req, res)
+    .then(result=> {
+      axios
+      .get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${process.env.GEOCODEAPI}`
+      )
+      .then((response) => {
+        ordersModel.aggregate([
+          {
+            $geoNear: {
+              near: {
+                type: "Point",
+                coordinates: [
+                  response.data.results[0].geometry.location.lng,
+                  response.data.results[0].geometry.location.lat,
+                ],
+              },
+              distanceField: "dis",
+              includeLocs: "loc",
+              spherical: true,
+              maxDistance: 500,
+              //only show orders that are made by others 
+              query: { userid: { $ne: result.user_id }}
+            },
+          },
+        ])
+          .then((updatedResult) => {
+            res.send(updatedResult);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    })
+    .catch(err=> console.log(err))
+    
+  },
 
 
     newOrder(req, res){
