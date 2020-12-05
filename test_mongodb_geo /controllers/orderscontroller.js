@@ -105,6 +105,44 @@ const ordersController = {
     .catch(err=> console.log(err))
   },
 
+  getJoinedOrderDetails(req, res) {
+    const orderid = req.params.id
+    
+    obtainUserInfo(req, res)
+    .then( response=>{
+      ordersModel.findOne({_id: orderid, "orderDetails.orderUserId": response.user_id }, {"orderDetails.$": 1})
+      .then(result=>{
+        // console.log(result)
+        res.json(result)
+        console.log('working')
+      })
+      .catch(err=> console.log(err))
+      
+    }
+    )
+    .catch(err=> console.log(err))
+
+  },
+
+  amendJoinedOrder(req ,res) {  
+    obtainUserInfo(req, res)
+    .then(response=>{
+      if(!response){
+        res.json({message: "user error"})
+        return
+  }
+      const orderid = req.params._id
+      ordersModel.findOneAndUpdate({_id: orderid, "orderDetails.orderUserId":response.user_id},
+        {$set: {"orderDetails.$.food": [req.body.orderitem]}  }
+        )
+      .then(result=>{
+        res.json(result)
+        console.log('working')
+      })
+      .catch(err=>{ console.log(err)})
+  
+  })
+  },
 
     // newOrder(req, res){
     //   usersModel.findOne({

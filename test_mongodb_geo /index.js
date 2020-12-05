@@ -32,6 +32,12 @@ app.post('/api/v1/users/login', usersController.login)
 // join an order
 app.post('/api/v1/users/joinorder/:id', verifyJWT, orderController.joinOrder)
 
+// get request to obtain the orders details inorder to populate the order field
+app.get('/api/v1/users/joinorder/:id' , verifyJWT, orderController.getJoinedOrderDetails)
+
+// edit orders of joined order
+app.put('/api/v1/users/joinorder/:id}', verifyJWT, orderController.amendJoinedOrder)
+
 //create a new order
 //app.get('/api/v1/users/neworder', orderController.newOrder)
 
